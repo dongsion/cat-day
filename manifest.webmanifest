@@ -1,0 +1,11 @@
+{
+  "name": "猫砂账本",
+  "short_name": "猫砂账本",
+  "description": "单人本地使用的每日猫砂报酬记录工具",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#fff8f2",
+  "theme_color": "#fff7f0",
+  "lang": "zh-CN",
+  "icons": []
+}
