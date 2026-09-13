@@ -1,161 +1,54 @@
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<meta name="theme-color" content="#fff7f0" />
-<div class="app-shell">
-  <header class="topbar">
-    <div>
-      <p class="eyebrow">猫咪事务所</p>
-      <h1 id="monthTitle">2026年09月</h1>
-    </div>
-    <button class="icon-button" id="todayBtn" title="回到今天" aria-label="回到今天">⌾</button>
-  </header>
-
-  <section class="summary-card">
-    <div class="summary-main">
-      <span>本月已付报酬</span>
-      <strong id="monthTotal">¥0.00</strong>
-      <small id="monthCount">本月已记录 0 天</small>
-    </div>
-    <div class="cat-mark" aria-hidden="true">🐾</div>
-  </section>
-
-  <main>
-    <section class="calendar-card" aria-label="报酬日历">
-      <div class="calendar-toolbar">
-        <button class="month-nav" id="prevMonth" aria-label="上个月">‹</button>
-        <span>每日铲屎报酬</span>
-        <button class="month-nav" id="nextMonth" aria-label="下个月">›</button>
-      </div>
-      <div class="weekdays">
-        <span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span><span>日</span>
-      </div>
-      <div class="calendar-grid" id="calendarGrid"></div>
-      <p class="calendar-hint">点击日期，记录当天给弟弟的报酬</p>
-    </section>
-
-    <section class="records-section">
-      <div class="section-heading">
-        <div>
-          <p class="eyebrow">账本</p>
-          <h2>最近记录</h2>
-        </div>
-        <button class="text-button" id="clearMonthBtn">清空本月</button>
-      </div>
-      <div class="record-list" id="recordList"></div>
-    </section>
-  </main>
-
-  <button class="floating-add" id="addTodayBtn" aria-label="记录今天报酬">＋</button>
-
-  <div class="modal-backdrop" id="modalBackdrop" hidden>
-    <form class="record-modal" id="recordForm">
-      <button type="button" class="close-button" id="closeModal" aria-label="关闭">×</button>
-      <div class="modal-icon">🐱</div>
-      <p class="eyebrow">铲屎官打卡</p>
-      <h2 id="modalDateTitle">记录报酬</h2>
-      <p class="autosave-status" id="autosaveStatus">草稿每 1 分钟自动保存到本机</p>
-      <label for="amountInput">今天给弟弟多少报酬？</label>
-      <div class="amount-input-wrap"><span>¥</span><input id="amountInput" type="number" min="0" max="99999" step="0.01" inputmode="decimal" placeholder="例如 10" required /></div>
-      <label for="noteInput">备注（可选）</label>
-      <input id="noteInput" type="text" maxlength="24" placeholder="例如：认真清理猫砂盆" />
-      <div class="modal-actions">
-        <button class="secondary-button" id="deleteBtn" type="button">删除记录</button>
-        <button class="primary-button" type="submit">保存报酬</button>
-      </div>
-    </form>
-  </div>
-</div>
-
-<style>
-  :root { --ink:#2f2926; --muted:#8c817a; --paper:#fffdf9; --panel:#ffffff; --line:#eee8e1; --peach:#f7cdbc; --peach-deep:#e8785e; --soft:#fff4ed; --shadow:0 12px 35px rgba(75,48,37,.08); }
-  * { box-sizing:border-box; }
-  body { margin:0; min-width:320px; background:linear-gradient(145deg,#fff7f0 0%,#f7f4f1 55%,#fffdfa 100%); color:var(--ink); font-family:"Microsoft YaHei","PingFang SC",system-ui,sans-serif; }
-  button,input { font:inherit; }
-  button { cursor:pointer; }
-  .app-shell { width:min(100%,760px); min-height:100vh; margin:0 auto; padding:32px 20px 90px; }
-  .topbar,.section-heading,.calendar-toolbar,.modal-actions { display:flex; align-items:center; justify-content:space-between; }
-  .eyebrow { margin:0 0 5px; color:var(--peach-deep); font-weight:700; font-size:12px; letter-spacing:.12em; }
-  h1,h2,p { margin-top:0; } h1 { margin-bottom:0; font-size:30px; letter-spacing:-.04em; } h2 { margin:0; font-size:20px; }
-  .icon-button,.month-nav,.close-button { width:42px;height:42px;border:1px solid var(--line);border-radius:13px;background:var(--panel);color:var(--ink);font-size:24px;box-shadow:0 4px 14px rgba(75,48,37,.04); }
-  .summary-card { display:flex; justify-content:space-between; align-items:center; margin:27px 0 18px; padding:23px 24px; border-radius:22px; background:linear-gradient(135deg,#f9d8ca,#f6bba5); box-shadow:var(--shadow); overflow:hidden; }
-  .summary-main span,.summary-main small { display:block; } .summary-main span { font-size:14px;font-weight:700;color:#6f4539; } .summary-main strong { display:block;margin:5px 0;color:#412e28;font-size:31px;letter-spacing:-.04em; } .summary-main small { color:#80584b;font-size:12px; }
-  .cat-mark { display:grid;place-items:center;width:70px;height:70px;border-radius:50%;background:rgba(255,255,255,.35);font-size:34px;transform:rotate(-8deg); }
-  .calendar-card,.records-section { background:rgba(255,255,255,.82);border:1px solid rgba(238,232,225,.9);border-radius:22px;box-shadow:var(--shadow); }
-  .calendar-card { padding:18px 16px 13px; } .calendar-toolbar { padding:0 2px 15px;font-size:14px;font-weight:800; } .month-nav { width:32px;height:32px;border:0;background:var(--soft);color:var(--peach-deep);font-size:28px;line-height:1;box-shadow:none; }
-  .weekdays,.calendar-grid { display:grid;grid-template-columns:repeat(7,1fr); } .weekdays { margin-bottom:5px; color:var(--muted);font-size:12px;text-align:center; } .calendar-grid { gap:5px 2px; }
-  .day { position:relative;aspect-ratio:1/1;min-height:53px; padding:7px 3px 3px;border:0;border-radius:14px;background:transparent;color:var(--ink);text-align:center;transition:.18s ease; } .day:hover { background:var(--soft); } .day.empty { pointer-events:none; } .day.today .day-number { display:inline-grid;place-items:center;width:25px;height:25px;border-radius:50%;background:var(--peach-deep);color:#fff; }
-  .day.has-record { background:#fff5ef; } .day.selected { outline:2px solid var(--peach); } .day-number { font-size:14px;font-weight:800; } .day-amount { display:block;margin-top:4px;color:var(--peach-deep);font-size:10px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
-  .calendar-hint { margin:14px 3px 0;color:var(--muted);font-size:12px;text-align:center; }
-  .records-section { margin-top:18px;padding:20px; } .text-button { border:0;background:transparent;color:var(--peach-deep);font-size:13px;font-weight:700; }
-  .record-list { margin-top:13px; } .record-item { display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line); } .record-item:last-child { border-bottom:0; } .record-day { display:grid;place-items:center;width:38px;height:38px;border-radius:12px;background:var(--soft);color:var(--peach-deep);font-weight:800;font-size:13px; } .record-meta { flex:1;min-width:0; } .record-meta strong,.record-meta span { display:block; } .record-meta strong { font-size:14px; } .record-meta span { margin-top:2px;color:var(--muted);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; } .record-amount { color:var(--peach-deep);font-weight:800; } .empty-state { padding:26px 6px 10px;color:var(--muted);font-size:14px;text-align:center; }
-  .floating-add { position:fixed;right:max(24px,calc((100vw - 760px)/2 + 4px));bottom:25px;display:grid;place-items:center;width:57px;height:57px;border:0;border-radius:18px;background:var(--ink);color:#fff;font-size:32px;box-shadow:0 12px 25px rgba(47,41,38,.25); }
-  .modal-backdrop { position:fixed;inset:0;z-index:4;display:grid;place-items:center;padding:20px;background:rgba(47,41,38,.36);backdrop-filter:blur(4px); } .modal-backdrop[hidden] { display:none; } .record-modal { position:relative;width:min(100%,410px);padding:29px;border-radius:24px;background:var(--paper);box-shadow:0 25px 65px rgba(47,31,24,.28); } .modal-icon { display:grid;place-items:center;width:48px;height:48px;margin-bottom:16px;border-radius:15px;background:var(--soft);font-size:25px; } .record-modal h2 { margin-bottom:23px; } .close-button { position:absolute;right:19px;top:18px;width:32px;height:32px;border:0;background:#f5f0eb;font-size:24px;line-height:1;box-shadow:none; }
-  label { display:block;margin:14px 0 7px;font-size:13px;font-weight:700; } input { width:100%;border:1px solid #e9e1da;border-radius:12px;background:#fff;padding:12px 13px;outline:0; } input:focus { border-color:var(--peach-deep);box-shadow:0 0 0 3px rgba(232,120,94,.12); } .amount-input-wrap { display:flex;align-items:center;border:1px solid #e9e1da;border-radius:12px;background:#fff;overflow:hidden; } .amount-input-wrap:focus-within { border-color:var(--peach-deep);box-shadow:0 0 0 3px rgba(232,120,94,.12); } .amount-input-wrap span { padding-left:14px;color:var(--peach-deep);font-size:20px;font-weight:800; } .amount-input-wrap input { border:0;box-shadow:none!important;font-size:21px;font-weight:800; }
-  .autosave-status { margin:-13px 0 16px;color:var(--muted);font-size:12px; } .autosave-status.saved { color:#7b9b7e; } .modal-actions { gap:10px;margin-top:24px; } .primary-button,.secondary-button { flex:1;border:0;border-radius:12px;padding:12px 11px;font-weight:800; } .primary-button { background:var(--ink);color:#fff; } .secondary-button { background:#f4efea;color:#8c817a; }
-  @media (max-width:600px) { body { min-width:0; } .app-shell { width:100%;padding:calc(18px + env(safe-area-inset-top)) 12px calc(94px + env(safe-area-inset-bottom)); } .topbar { padding:0 4px; } h1 { font-size:27px; }.icon-button { width:40px;height:40px; } .summary-card { margin:20px 0 14px;padding:19px 20px;border-radius:19px; }.summary-main strong { font-size:28px; }.cat-mark { width:58px;height:58px;font-size:29px; }.calendar-card { padding:14px 8px 11px;border-radius:19px; }.calendar-toolbar { padding:0 3px 11px; }.month-nav { width:38px;height:38px; }.weekdays { font-size:11px; }.calendar-grid { gap:3px 1px; }.day { min-height:0;padding:5px 1px 2px;border-radius:11px; }.day.today .day-number { width:23px;height:23px; }.day-number { font-size:13px; }.day-amount { margin-top:2px;font-size:9px;letter-spacing:-.04em; }.calendar-hint { margin-top:11px;font-size:11px; }.records-section { margin-top:14px;padding:17px 16px;border-radius:19px; }.record-item { min-height:61px; }.floating-add { right:18px;bottom:calc(18px + env(safe-area-inset-bottom));width:58px;height:58px;border-radius:19px; } .modal-backdrop { align-items:end;padding:0;background:rgba(47,41,38,.3); }.record-modal { width:100%;max-height:calc(100dvh - env(safe-area-inset-top));overflow:auto;padding:25px 20px calc(22px + env(safe-area-inset-bottom));border-radius:24px 24px 0 0; }.modal-icon { margin-bottom:12px; }.record-modal h2 { margin-bottom:19px; }.close-button { top:17px;right:16px; }.primary-button,.secondary-button { min-height:48px; } }
-  @media (max-width:360px) { .app-shell { padding-left:8px;padding-right:8px; }.calendar-card { padding-left:5px;padding-right:5px; }.day-number { font-size:12px; }.day-amount { font-size:8px; }.summary-card { padding:17px; }.summary-main strong { font-size:25px; }.cat-mark { width:52px;height:52px; } }
-  @media (hover:none) { .day:hover { background:transparent; } .day:active,.record-item:active { transform:scale(.98);background:var(--soft); } button { -webkit-tap-highlight-color:transparent;touch-action:manipulation; } }
-</style>
-
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#fff7f0">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="manifest" href="manifest.webmanifest">
+  <title>猫砂账本</title>
+  <style>
+    :root{--ink:#302a27;--muted:#8b817b;--peach:#e8785e;--peach-light:#f8d7cb;--soft:#fff3ed;--panel:#fff;--line:#efe8e2;--green:#5d9671;--green-bg:#eff8f1;--amber:#bf7a2c;--amber-bg:#fff6e8;--shadow:0 12px 32px rgba(75,48,37,.08)}
+    *{box-sizing:border-box}body{margin:0;background:linear-gradient(145deg,#fff8f2,#f5f2ef);font-family:system-ui,"Microsoft YaHei",sans-serif;color:var(--ink)}button,input,select{font:inherit}button{cursor:pointer;-webkit-tap-highlight-color:transparent}main{max-width:720px;min-height:100dvh;margin:auto;padding:calc(22px + env(safe-area-inset-top)) 14px calc(94px + env(safe-area-inset-bottom))}.topbar,.bar,.row,.sheet-actions{display:flex;align-items:center;justify-content:space-between}.kicker{margin:0;color:var(--peach);font-size:12px;font-weight:800;letter-spacing:.14em}h1{margin:3px 0 0;font-size:29px;letter-spacing:-.03em}h2{margin:0;font-size:19px}.icon-btn,.nav{display:grid;place-items:center;width:40px;height:40px;border:0;border-radius:13px;background:var(--soft);color:var(--peach);font-size:26px}.card{margin-top:16px;border:1px solid var(--line);border-radius:21px;background:var(--panel);box-shadow:var(--shadow)}.hero{display:flex;justify-content:space-between;align-items:center;padding:22px;background:linear-gradient(135deg,#f9dbd0,#f5bca9);border:0}.hero span,.hero small{display:block}.hero strong{display:block;margin:4px 0;font-size:31px;letter-spacing:-.04em}.hero small{color:#73564b;font-size:12px}.cat{font-size:39px}.stats{display:grid;grid-template-columns:repeat(3,1fr);padding:13px 8px}.stat{padding:3px 9px;border-right:1px solid var(--line)}.stat:last-child{border:0}.stat span,.stat strong{display:block}.stat span{color:var(--muted);font-size:11px}.stat strong{margin-top:4px;font-size:15px}.calendar{padding:15px 9px 12px}.bar{padding:0 3px 13px;font-size:14px;font-weight:800}.bar .nav{width:37px;height:37px}.week,.grid{display:grid;grid-template-columns:repeat(7,1fr)}.week{color:var(--muted);font-size:11px;text-align:center}.grid{gap:3px 1px;margin-top:5px}.blank{aspect-ratio:1}.day{min-width:0;aspect-ratio:1;border:0;border-radius:11px;background:none;color:var(--ink);font-weight:800;font-size:13px}.day.has{background:var(--soft)}.day.today i{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--peach);color:#fff;font-style:normal}.day i{font-style:normal}.day em{display:block;margin-top:2px;color:var(--peach);font-size:9px;font-style:normal;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.day.pending em{color:var(--amber)}.hint{text-align:center;color:var(--muted);font-size:11px;margin:12px 0 0}.tools{padding:17px}.tools-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}.tool{min-height:59px;border:1px solid var(--line);border-radius:14px;background:#fff;color:var(--ink);font-size:12px;font-weight:700}.tool b{display:block;color:var(--peach);font-size:18px}.records{padding:18px}.text-btn{border:0;background:none;color:var(--peach);font-size:12px;font-weight:800}.entry{display:flex;align-items:center;width:100%;gap:10px;padding:12px 0;border:0;border-bottom:1px solid var(--line);background:none;text-align:left}.entry:last-child{border:0}.datebox{display:grid;place-items:center;flex:none;width:40px;height:40px;border-radius:12px;background:var(--soft);color:var(--peach);font-size:13px;font-weight:800;font-style:normal}.meta{flex:1;min-width:0}.meta b,.meta span{display:block}.meta span{margin-top:3px;color:var(--muted);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.amount{color:var(--peach);font-weight:800}.badge{flex:none;padding:4px 6px;border-radius:7px;background:var(--green-bg);color:var(--green);font-size:10px;font-style:normal}.badge.pending{background:var(--amber-bg);color:var(--amber)}.empty{padding:25px 0 8px;color:var(--muted);text-align:center;font-size:13px}.add{position:fixed;right:20px;bottom:calc(20px + env(safe-area-inset-bottom));width:59px;height:59px;border:0;border-radius:19px;background:var(--ink);color:#fff;font-size:33px;box-shadow:0 12px 26px rgba(48,42,39,.28)}.shade{position:fixed;inset:0;z-index:5;display:grid;align-items:end;background:rgba(48,42,39,.32);backdrop-filter:blur(4px)}.shade[hidden]{display:none}.sheet{width:100%;max-height:94dvh;overflow:auto;padding:24px 20px calc(22px + env(safe-area-inset-bottom));border-radius:25px 25px 0 0;background:#fff}.sheet h2{margin:6px 0 8px}.status{margin:0 0 15px;color:var(--muted);font-size:12px}.form-label{display:block;margin:14px 0 7px;font-size:13px;font-weight:800}.amount-wrap{display:flex;align-items:center;border:1px solid var(--line);border-radius:12px;padding-left:13px}.amount-wrap:focus-within{border-color:var(--peach);box-shadow:0 0 0 3px #e8785e20}.amount-wrap span{color:var(--peach);font-size:20px;font-weight:800}.amount-wrap input{border:0!important;box-shadow:none!important}.quick{display:flex;gap:7px;margin-top:8px}.quick button{flex:1;border:1px solid var(--line);border-radius:10px;background:var(--soft);padding:9px 3px;color:var(--peach);font-size:13px;font-weight:800}input,select{width:100%;padding:13px;border:1px solid var(--line);border-radius:12px;background:#fff;outline:0}input:focus,select:focus{border-color:var(--peach);box-shadow:0 0 0 3px #e8785e20}.sheet-actions{gap:10px;margin-top:23px}.sheet-actions button{flex:1;border:0;border-radius:12px;padding:14px;font-weight:800}.save{background:var(--ink);color:#fff}.secondary{background:#f3efeb;color:var(--muted)}.settings{display:grid;gap:10px}.settings .row{gap:10px}.settings .row label{flex:1;margin:0;font-size:13px;font-weight:800}.settings .row input{width:100px;text-align:center}.backup-note{margin:13px 0 0;color:var(--muted);font-size:12px;line-height:1.6}.toast{position:fixed;left:50%;bottom:calc(93px + env(safe-area-inset-bottom));z-index:9;transform:translate(-50%,15px);padding:10px 15px;border-radius:12px;background:var(--ink);color:#fff;font-size:13px;opacity:0;pointer-events:none;transition:.2s}.toast.show{opacity:1;transform:translate(-50%,0)}
+    @media(min-width:601px){.shade{place-items:center}.sheet{width:430px;border-radius:23px;padding:28px}.add{right:max(28px,calc((100vw - 720px)/2))}.tools-grid{grid-template-columns:repeat(4,1fr)}}
+  </style>
+</head>
+<body>
+<main>
+  <header class="topbar"><div><p class="kicker">猫咪事务所</p><h1 id="title"></h1></div><button class="icon-btn" id="settingsBtn" aria-label="设置">⚙</button></header>
+  <section class="card hero"><div><span>本月已付报酬</span><strong id="sum">¥0.00</strong><small id="count">本月已记录 0 天</small></div><div class="cat">🐾</div></section>
+  <section class="card stats"><div class="stat"><span>待付</span><strong id="pendingTotal">¥0.00</strong></div><div class="stat"><span>日均报酬</span><strong id="average">¥0.00</strong></div><div class="stat"><span>最高单日</span><strong id="highest">¥0.00</strong></div></section>
+  <section class="card calendar"><div class="bar"><button class="nav" id="prev">‹</button><span>每日铲屎报酬</span><button class="nav" id="next">›</button></div><div class="week"><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span><span>日</span></div><div class="grid" id="grid"></div><p class="hint">点击日期，记录今天的铲屎报酬</p></section>
+  <section class="card tools"><div class="bar"><div><p class="kicker">本地数据</p><h2>备份与恢复</h2></div></div><div class="tools-grid"><button class="tool" id="exportBtn"><b>↓</b>导出备份</button><button class="tool" id="importBtn"><b>↑</b>导入恢复</button><button class="tool" id="installBtn"><b>＋</b>安装到桌面</button><button class="tool" id="defaultBtn"><b>¥</b>默认金额</button></div><input id="importFile" type="file" accept="application/json" hidden><p class="backup-note">所有账目仅保存于本机浏览器。建议每月导出一次备份，换手机时再导入恢复。</p></section>
+  <section class="card records"><div class="bar"><div><p class="kicker">账本</p><h2>最近记录</h2></div><button id="clear" class="text-btn">清空本月</button></div><div id="list"></div></section>
+</main>
+<button class="add" id="add" aria-label="记录今天报酬">＋</button>
+<div class="shade" id="recordShade" hidden><form class="sheet" id="recordForm"><p class="kicker">铲屎官打卡</p><h2 id="dateTitle"></h2><p class="status" id="saveStatus">草稿每 1 分钟自动保存到本机</p><label class="form-label">今天给弟弟多少报酬？</label><div class="amount-wrap"><span>¥</span><input id="money" type="number" min="0" step="0.01" inputmode="decimal" required placeholder="例如 10"></div><div class="quick"><button type="button" data-money="5">¥5</button><button type="button" data-money="10">¥10</button><button type="button" data-money="20">¥20</button><button type="button" id="lastMoney">上次金额</button></div><label class="form-label">付款状态</label><select id="paid"><option value="paid">已付款</option><option value="pending">待付款</option></select><label class="form-label">备注（可选）</label><input id="note" maxlength="30" placeholder="例如：认真清理猫砂盆"><div class="sheet-actions"><button type="button" class="secondary" id="remove">删除</button><button class="save">保存报酬</button></div></form></div>
+<div class="shade" id="settingsShade" hidden><section class="sheet"><p class="kicker">个人设置</p><h2>记账偏好</h2><div class="settings"><div class="row"><label for="defaultMoney">默认报酬金额</label><input id="defaultMoney" type="number" min="0" step="0.01"></div><div class="row"><label for="quickOne">快捷金额 1</label><input id="quickOne" type="number" min="0" step="0.01"></div><div class="row"><label for="quickTwo">快捷金额 2</label><input id="quickTwo" type="number" min="0" step="0.01"></div><div class="row"><label for="quickThree">快捷金额 3</label><input id="quickThree" type="number" min="0" step="0.01"></div></div><div class="sheet-actions"><button class="secondary" id="closeSettings">取消</button><button class="save" id="saveSettings">保存设置</button></div></section></div>
+<div class="toast" id="toast"></div>
 <script>
-  const KEY = "cat-litter-rewards-v1";
-  const DRAFT_KEY = "cat-litter-rewards-draft-v1";
-  const AUTOSAVE_INTERVAL = 60 * 1000;
-  let records = JSON.parse(localStorage.getItem(KEY) || "{}");
-  let current = new Date(); current = new Date(current.getFullYear(), current.getMonth(), 1);
-  let selectedDate = null;
-  const $ = (id) => document.getElementById(id);
-  const money = (n) => new Intl.NumberFormat("zh-CN", { style:"currency", currency:"CNY" }).format(n);
-  const dateKey = (d) => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
-  const readableDate = (key) => { const [y,m,d] = key.split("-"); return `${y}年${Number(m)}月${Number(d)}日`; };
-  const save = () => localStorage.setItem(KEY, JSON.stringify(records));
-  const updateAutosaveStatus = (text, saved = false) => { const el = $("autosaveStatus"); if (!el) return; el.textContent = text; el.classList.toggle("saved", saved); };
-  const saveDraft = () => {
-    if (!selectedDate || $("modalBackdrop").hidden) return;
-    const draft = { date: selectedDate, amount: $("amountInput").value, note: $("noteInput").value, savedAt: new Date().toISOString() };
-    localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
-    updateAutosaveStatus("草稿已自动保存到本机", true);
-  };
-  const clearDraft = () => localStorage.removeItem(DRAFT_KEY);
-  const sameDay = (a,b) => a.getFullYear()===b.getFullYear() && a.getMonth()===b.getMonth() && a.getDate()===b.getDate();
-
-  function render() {
-    const y=current.getFullYear(), m=current.getMonth();
-    $("monthTitle").textContent = `${y}年${String(m+1).padStart(2,"0")}月`;
-    const prefix = (new Date(y,m,1).getDay()+6)%7;
-    const days = new Date(y,m+1,0).getDate();
-    const today = new Date(); const grid = $("calendarGrid"); grid.innerHTML="";
-    for(let i=0;i<prefix;i++) grid.insertAdjacentHTML("beforeend",'<div class="day empty"></div>');
-    for(let d=1;d<=days;d++) {
-      const date=new Date(y,m,d), key=dateKey(date), rec=records[key];
-      const classes=["day",sameDay(date,today)?"today":"",rec?"has-record":"",key===selectedDate?"selected":""].filter(Boolean).join(" ");
-      grid.insertAdjacentHTML("beforeend", `<button class="${classes}" data-date="${key}"><span class="day-number">${d}</span>${rec?`<span class="day-amount">¥${Number(rec.amount).toFixed(2)}</span>`:""}</button>`);
-    }
-    const monthPrefix=`${y}-${String(m+1).padStart(2,"0")}-`;
-    const monthRecords=Object.entries(records).filter(([k])=>k.startsWith(monthPrefix)).sort((a,b)=>b[0].localeCompare(a[0]));
-    const total=monthRecords.reduce((s,[,v])=>s+Number(v.amount),0);
-    $("monthTotal").textContent=money(total); $("monthCount").textContent=`本月已记录 ${monthRecords.length} 天`;
-    $("recordList").innerHTML=monthRecords.length ? monthRecords.map(([k,v])=>`<button class="record-item" data-date="${k}" style="width:100%;border-left:0;border-right:0;border-top:0;background:transparent;text-align:left"><span class="record-day">${Number(k.slice(-2))}日</span><span class="record-meta"><strong>${readableDate(k)}</strong><span>${v.note || "铲屎报酬"}</span></span><span class="record-amount">${money(Number(v.amount))}</span></button>`).join("") : '<div class="empty-state">这个月还没有记录<br>点右下角“＋”开始记账吧</div>';
-  }
-  function openModal(key) {
-    selectedDate=key; const rec=records[key]; const draft=JSON.parse(localStorage.getItem(DRAFT_KEY) || "null");
-    const useDraft=draft && draft.date===key;
-    $("modalDateTitle").textContent=readableDate(key); $("amountInput").value=useDraft?draft.amount:(rec?rec.amount:""); $("noteInput").value=useDraft?draft.note:(rec?rec.note||"":"");
-    $("deleteBtn").style.visibility=rec?"visible":"hidden"; $("modalBackdrop").hidden=false;
-    updateAutosaveStatus(useDraft?"已恢复未提交草稿，1 分钟后自动保存":"草稿每 1 分钟自动保存到本机");
-    setTimeout(()=>$("amountInput").focus(),50); render();
-  }
-  function closeModal(){ $("modalBackdrop").hidden=true; selectedDate=null; render(); }
-  $("calendarGrid").addEventListener("click",e=>{const b=e.target.closest("[data-date]");if(b) openModal(b.dataset.date)});
-  $("recordList").addEventListener("click",e=>{const b=e.target.closest("[data-date]");if(b) openModal(b.dataset.date)});
-  $("prevMonth").onclick=()=>{current.setMonth(current.getMonth()-1);render()}; $("nextMonth").onclick=()=>{current.setMonth(current.getMonth()+1);render()};
-  $("todayBtn").onclick=()=>{const d=new Date();current=new Date(d.getFullYear(),d.getMonth(),1);render()}; $("addTodayBtn").onclick=()=>openModal(dateKey(new Date()));
-  $("closeModal").onclick=closeModal; $("modalBackdrop").addEventListener("click",e=>{if(e.target===$("modalBackdrop"))closeModal()});
-  $("recordForm").addEventListener("submit",e=>{e.preventDefault();const amount=Number($("amountInput").value); if(!Number.isFinite(amount)||amount<0)return; records[selectedDate]={amount,note:$("noteInput").value.trim()};save();clearDraft();closeModal()});
-  $("deleteBtn").onclick=()=>{if(records[selectedDate] && confirm("确定删除这天的报酬记录吗？")){delete records[selectedDate];save();clearDraft();closeModal()}};
-  $("clearMonthBtn").onclick=()=>{const prefix=`${current.getFullYear()}-${String(current.getMonth()+1).padStart(2,"0")}-`; if(confirm("确定清空本月全部报酬记录吗？")){Object.keys(records).filter(k=>k.startsWith(prefix)).forEach(k=>delete records[k]);save();render()}};
-  $("amountInput").addEventListener("input",()=>updateAutosaveStatus("草稿将在 1 分钟内自动保存到本机"));
-  $("noteInput").addEventListener("input",()=>updateAutosaveStatus("草稿将在 1 分钟内自动保存到本机"));
-  setInterval(()=>{ save(); saveDraft(); }, AUTOSAVE_INTERVAL);
-  window.addEventListener("pagehide",()=>{ save(); saveDraft(); });
-  render();
+  const KEY='cat-day-records-v2', DRAFT='cat-day-draft-v2', PREF='cat-day-preferences-v2';
+  let records=JSON.parse(localStorage.getItem(KEY)||'{}');
+  let prefs=JSON.parse(localStorage.getItem(PREF)||'{"defaultMoney":10,"quick":[5,10,20]}');
+  let month=new Date(), selected=''; month=new Date(month.getFullYear(),month.getMonth(),1);
+  let installEvent=null; const $=id=>document.getElementById(id);
+  const dateKey=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  const money=n=>new Intl.NumberFormat('zh-CN',{style:'currency',currency:'CNY'}).format(Number(n)||0);
+  const save=()=>localStorage.setItem(KEY,JSON.stringify(records)); const savePrefs=()=>localStorage.setItem(PREF,JSON.stringify(prefs));
+  function toast(t){$('toast').textContent=t;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),2200)}
+  function monthEntries(){const p=`${month.getFullYear()}-${String(month.getMonth()+1).padStart(2,'0')}-`;return Object.entries(records).filter(([k])=>k.startsWith(p)).sort((a,b)=>b[0].localeCompare(a[0]))}
+  function render(){let y=month.getFullYear(),mo=month.getMonth(),first=(new Date(y,mo,1).getDay()+6)%7,days=new Date(y,mo+1,0).getDate(),today=dateKey(new Date()),grid=$('grid');$('title').textContent=`${y}年${String(mo+1).padStart(2,'0')}月`;grid.innerHTML='<span class="blank"></span>'.repeat(first);for(let d=1;d<=days;d++){const dt=new Date(y,mo,d),k=dateKey(dt),v=records[k];grid.innerHTML+=`<button class="day ${v?'has':''} ${v?.status==='pending'?'pending':''} ${k===today?'today':''}" data-date="${k}"><i>${d}</i>${v?`<em>${v.status==='pending'?'待 ':''}¥${Number(v.amount).toFixed(0)}</em>`:''}</button>`}const entries=monthEntries(),paid=entries.filter(([,v])=>v.status!=='pending'),pending=entries.filter(([,v])=>v.status==='pending'),paidSum=paid.reduce((s,[,v])=>s+Number(v.amount),0),pendingSum=pending.reduce((s,[,v])=>s+Number(v.amount),0),max=entries.length?Math.max(...entries.map(([,v])=>Number(v.amount))):0;$('sum').textContent=money(paidSum);$('count').textContent=`本月已记录 ${entries.length} 天`; $('pendingTotal').textContent=money(pendingSum);$('average').textContent=money(entries.length?(paidSum+pendingSum)/entries.length:0);$('highest').textContent=money(max);$('list').innerHTML=entries.length?entries.map(([k,v])=>`<button class="entry" data-date="${k}"><i class="datebox">${Number(k.slice(-2))}日</i><span class="meta"><b>${k}</b><span>${v.note||'铲屎报酬'}</span></span><i class="badge ${v.status==='pending'?'pending':''}">${v.status==='pending'?'待付款':'已付款'}</i><b class="amount">${money(v.amount)}</b></button>`).join(''):'<p class="empty">这个月还没有记录<br>点右下角“＋”开始记账吧</p>'}
+  function lastAmount(){const vals=Object.entries(records).sort((a,b)=>b[0].localeCompare(a[0]));return vals[0]?.[1]?.amount||prefs.defaultMoney}
+  function openRecord(k){selected=k;const draft=JSON.parse(localStorage.getItem(DRAFT)||'null'),v=draft?.date===k?draft:records[k];$('dateTitle').textContent=k;$('money').value=v?.amount??prefs.defaultMoney;$('note').value=v?.note||'';$('paid').value=v?.status||'paid';$('remove').style.visibility=records[k]?'visible':'hidden';$('saveStatus').textContent=draft?.date===k?'已恢复未提交草稿':'草稿每 1 分钟自动保存到本机';document.querySelectorAll('[data-money]').forEach((b,i)=>b.textContent=`¥${prefs.quick[i]}`);$('recordShade').hidden=false;setTimeout(()=>$('money').focus(),80)}
+  function closeRecord(){ $('recordShade').hidden=true;selected='';render() }
+  function saveDraft(){if(!selected||$('recordShade').hidden)return;localStorage.setItem(DRAFT,JSON.stringify({date:selected,amount:$('money').value,note:$('note').value,status:$('paid').value}));$('saveStatus').textContent='草稿已自动保存到本机'}
+  $('grid').onclick=e=>{const b=e.target.closest('[data-date]');if(b)openRecord(b.dataset.date)};$('list').onclick=e=>{const b=e.target.closest('[data-date]');if(b)openRecord(b.dataset.date)};$('prev').onclick=()=>{month.setMonth(month.getMonth()-1);render()};$('next').onclick=()=>{month.setMonth(month.getMonth()+1);render()};$('add').onclick=()=>openRecord(dateKey(new Date()));$('recordShade').onclick=e=>{if(e.target===$('recordShade'))closeRecord()};
+  document.querySelector('.quick').onclick=e=>{const b=e.target.closest('button');if(!b)return;if(b.id==='lastMoney')$('money').value=lastAmount();else $('money').value=b.dataset.money;$('saveStatus').textContent='草稿将在 1 分钟内自动保存'};
+  $('recordForm').onsubmit=e=>{e.preventDefault();const amount=Number($('money').value);if(!Number.isFinite(amount)||amount<0)return;records[selected]={amount,note:$('note').value.trim(),status:$('paid').value};save();localStorage.removeItem(DRAFT);toast('已保存到本机');closeRecord()};$('remove').onclick=()=>{if(records[selected]&&confirm('确定删除这天的记录吗？')){delete records[selected];save();localStorage.removeItem(DRAFT);closeRecord();toast('已删除记录')}};$('clear').onclick=()=>{if(confirm('确定清空本月全部记录吗？')){monthEntries().forEach(([k])=>delete records[k]);save();render();toast('已清空本月记录')}};
+  $('settingsBtn').onclick=()=>{$('defaultMoney').value=prefs.defaultMoney;$('quickOne').value=prefs.quick[0];$('quickTwo').value=prefs.quick[1];$('quickThree').value=prefs.quick[2];$('settingsShade').hidden=false};$('closeSettings').onclick=()=>$('settingsShade').hidden=true;$('settingsShade').onclick=e=>{if(e.target===$('settingsShade'))$('settingsShade').hidden=true};$('saveSettings').onclick=()=>{prefs={defaultMoney:Number($('defaultMoney').value)||0,quick:[Number($('quickOne').value)||0,Number($('quickTwo').value)||0,Number($('quickThree').value)||0]};savePrefs();$('settingsShade').hidden=true;toast('偏好已保存')};$('defaultBtn').onclick=()=>$('settingsBtn').click();
+  $('exportBtn').onclick=()=>{const blob=new Blob([JSON.stringify({app:'猫砂账本',version:2,exportedAt:new Date().toISOString(),records,prefs},null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`猫砂账本备份-${dateKey(new Date())}.json`;a.click();URL.revokeObjectURL(a.href);toast('备份文件已导出')};$('importBtn').onclick=()=>$('importFile').click();$('importFile').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const data=JSON.parse(await f.text());if(!data.records||typeof data.records!=='object')throw Error();if(!confirm('导入将覆盖当前本机账本，确定继续吗？'))return;records=data.records;prefs=data.prefs||prefs;save();savePrefs();render();toast('备份已恢复')}catch{alert('无法识别该备份文件')}finally{e.target.value=''}};
+  window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installEvent=e;$('installBtn').style.display='block'});$('installBtn').onclick=async()=>{if(!installEvent){toast('请在浏览器菜单中选择“添加到主屏幕”');return}installEvent.prompt();await installEvent.userChoice;installEvent=null};setInterval(()=>{save();saveDraft()},60000);addEventListener('pagehide',()=>{save();saveDraft()});
+  if('serviceWorker'in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});render();
 </script>
+</body></html>
