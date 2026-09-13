@@ -1,0 +1,161 @@
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#fff7f0" />
+<div class="app-shell">
+  <header class="topbar">
+    <div>
+      <p class="eyebrow">猫咪事务所</p>
+      <h1 id="monthTitle">2026年09月</h1>
+    </div>
+    <button class="icon-button" id="todayBtn" title="回到今天" aria-label="回到今天">⌾</button>
+  </header>
+
+  <section class="summary-card">
+    <div class="summary-main">
+      <span>本月已付报酬</span>
+      <strong id="monthTotal">¥0.00</strong>
+      <small id="monthCount">本月已记录 0 天</small>
+    </div>
+    <div class="cat-mark" aria-hidden="true">🐾</div>
+  </section>
+
+  <main>
+    <section class="calendar-card" aria-label="报酬日历">
+      <div class="calendar-toolbar">
+        <button class="month-nav" id="prevMonth" aria-label="上个月">‹</button>
+        <span>每日铲屎报酬</span>
+        <button class="month-nav" id="nextMonth" aria-label="下个月">›</button>
+      </div>
+      <div class="weekdays">
+        <span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span><span>日</span>
+      </div>
+      <div class="calendar-grid" id="calendarGrid"></div>
+      <p class="calendar-hint">点击日期，记录当天给弟弟的报酬</p>
+    </section>
+
+    <section class="records-section">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">账本</p>
+          <h2>最近记录</h2>
+        </div>
+        <button class="text-button" id="clearMonthBtn">清空本月</button>
+      </div>
+      <div class="record-list" id="recordList"></div>
+    </section>
+  </main>
+
+  <button class="floating-add" id="addTodayBtn" aria-label="记录今天报酬">＋</button>
+
+  <div class="modal-backdrop" id="modalBackdrop" hidden>
+    <form class="record-modal" id="recordForm">
+      <button type="button" class="close-button" id="closeModal" aria-label="关闭">×</button>
+      <div class="modal-icon">🐱</div>
+      <p class="eyebrow">铲屎官打卡</p>
+      <h2 id="modalDateTitle">记录报酬</h2>
+      <p class="autosave-status" id="autosaveStatus">草稿每 1 分钟自动保存到本机</p>
+      <label for="amountInput">今天给弟弟多少报酬？</label>
+      <div class="amount-input-wrap"><span>¥</span><input id="amountInput" type="number" min="0" max="99999" step="0.01" inputmode="decimal" placeholder="例如 10" required /></div>
+      <label for="noteInput">备注（可选）</label>
+      <input id="noteInput" type="text" maxlength="24" placeholder="例如：认真清理猫砂盆" />
+      <div class="modal-actions">
+        <button class="secondary-button" id="deleteBtn" type="button">删除记录</button>
+        <button class="primary-button" type="submit">保存报酬</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<style>
+  :root { --ink:#2f2926; --muted:#8c817a; --paper:#fffdf9; --panel:#ffffff; --line:#eee8e1; --peach:#f7cdbc; --peach-deep:#e8785e; --soft:#fff4ed; --shadow:0 12px 35px rgba(75,48,37,.08); }
+  * { box-sizing:border-box; }
+  body { margin:0; min-width:320px; background:linear-gradient(145deg,#fff7f0 0%,#f7f4f1 55%,#fffdfa 100%); color:var(--ink); font-family:"Microsoft YaHei","PingFang SC",system-ui,sans-serif; }
+  button,input { font:inherit; }
+  button { cursor:pointer; }
+  .app-shell { width:min(100%,760px); min-height:100vh; margin:0 auto; padding:32px 20px 90px; }
+  .topbar,.section-heading,.calendar-toolbar,.modal-actions { display:flex; align-items:center; justify-content:space-between; }
+  .eyebrow { margin:0 0 5px; color:var(--peach-deep); font-weight:700; font-size:12px; letter-spacing:.12em; }
+  h1,h2,p { margin-top:0; } h1 { margin-bottom:0; font-size:30px; letter-spacing:-.04em; } h2 { margin:0; font-size:20px; }
+  .icon-button,.month-nav,.close-button { width:42px;height:42px;border:1px solid var(--line);border-radius:13px;background:var(--panel);color:var(--ink);font-size:24px;box-shadow:0 4px 14px rgba(75,48,37,.04); }
+  .summary-card { display:flex; justify-content:space-between; align-items:center; margin:27px 0 18px; padding:23px 24px; border-radius:22px; background:linear-gradient(135deg,#f9d8ca,#f6bba5); box-shadow:var(--shadow); overflow:hidden; }
+  .summary-main span,.summary-main small { display:block; } .summary-main span { font-size:14px;font-weight:700;color:#6f4539; } .summary-main strong { display:block;margin:5px 0;color:#412e28;font-size:31px;letter-spacing:-.04em; } .summary-main small { color:#80584b;font-size:12px; }
+  .cat-mark { display:grid;place-items:center;width:70px;height:70px;border-radius:50%;background:rgba(255,255,255,.35);font-size:34px;transform:rotate(-8deg); }
+  .calendar-card,.records-section { background:rgba(255,255,255,.82);border:1px solid rgba(238,232,225,.9);border-radius:22px;box-shadow:var(--shadow); }
+  .calendar-card { padding:18px 16px 13px; } .calendar-toolbar { padding:0 2px 15px;font-size:14px;font-weight:800; } .month-nav { width:32px;height:32px;border:0;background:var(--soft);color:var(--peach-deep);font-size:28px;line-height:1;box-shadow:none; }
+  .weekdays,.calendar-grid { display:grid;grid-template-columns:repeat(7,1fr); } .weekdays { margin-bottom:5px; color:var(--muted);font-size:12px;text-align:center; } .calendar-grid { gap:5px 2px; }
+  .day { position:relative;aspect-ratio:1/1;min-height:53px; padding:7px 3px 3px;border:0;border-radius:14px;background:transparent;color:var(--ink);text-align:center;transition:.18s ease; } .day:hover { background:var(--soft); } .day.empty { pointer-events:none; } .day.today .day-number { display:inline-grid;place-items:center;width:25px;height:25px;border-radius:50%;background:var(--peach-deep);color:#fff; }
+  .day.has-record { background:#fff5ef; } .day.selected { outline:2px solid var(--peach); } .day-number { font-size:14px;font-weight:800; } .day-amount { display:block;margin-top:4px;color:var(--peach-deep);font-size:10px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
+  .calendar-hint { margin:14px 3px 0;color:var(--muted);font-size:12px;text-align:center; }
+  .records-section { margin-top:18px;padding:20px; } .text-button { border:0;background:transparent;color:var(--peach-deep);font-size:13px;font-weight:700; }
+  .record-list { margin-top:13px; } .record-item { display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line); } .record-item:last-child { border-bottom:0; } .record-day { display:grid;place-items:center;width:38px;height:38px;border-radius:12px;background:var(--soft);color:var(--peach-deep);font-weight:800;font-size:13px; } .record-meta { flex:1;min-width:0; } .record-meta strong,.record-meta span { display:block; } .record-meta strong { font-size:14px; } .record-meta span { margin-top:2px;color:var(--muted);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; } .record-amount { color:var(--peach-deep);font-weight:800; } .empty-state { padding:26px 6px 10px;color:var(--muted);font-size:14px;text-align:center; }
+  .floating-add { position:fixed;right:max(24px,calc((100vw - 760px)/2 + 4px));bottom:25px;display:grid;place-items:center;width:57px;height:57px;border:0;border-radius:18px;background:var(--ink);color:#fff;font-size:32px;box-shadow:0 12px 25px rgba(47,41,38,.25); }
+  .modal-backdrop { position:fixed;inset:0;z-index:4;display:grid;place-items:center;padding:20px;background:rgba(47,41,38,.36);backdrop-filter:blur(4px); } .modal-backdrop[hidden] { display:none; } .record-modal { position:relative;width:min(100%,410px);padding:29px;border-radius:24px;background:var(--paper);box-shadow:0 25px 65px rgba(47,31,24,.28); } .modal-icon { display:grid;place-items:center;width:48px;height:48px;margin-bottom:16px;border-radius:15px;background:var(--soft);font-size:25px; } .record-modal h2 { margin-bottom:23px; } .close-button { position:absolute;right:19px;top:18px;width:32px;height:32px;border:0;background:#f5f0eb;font-size:24px;line-height:1;box-shadow:none; }
+  label { display:block;margin:14px 0 7px;font-size:13px;font-weight:700; } input { width:100%;border:1px solid #e9e1da;border-radius:12px;background:#fff;padding:12px 13px;outline:0; } input:focus { border-color:var(--peach-deep);box-shadow:0 0 0 3px rgba(232,120,94,.12); } .amount-input-wrap { display:flex;align-items:center;border:1px solid #e9e1da;border-radius:12px;background:#fff;overflow:hidden; } .amount-input-wrap:focus-within { border-color:var(--peach-deep);box-shadow:0 0 0 3px rgba(232,120,94,.12); } .amount-input-wrap span { padding-left:14px;color:var(--peach-deep);font-size:20px;font-weight:800; } .amount-input-wrap input { border:0;box-shadow:none!important;font-size:21px;font-weight:800; }
+  .autosave-status { margin:-13px 0 16px;color:var(--muted);font-size:12px; } .autosave-status.saved { color:#7b9b7e; } .modal-actions { gap:10px;margin-top:24px; } .primary-button,.secondary-button { flex:1;border:0;border-radius:12px;padding:12px 11px;font-weight:800; } .primary-button { background:var(--ink);color:#fff; } .secondary-button { background:#f4efea;color:#8c817a; }
+  @media (max-width:600px) { body { min-width:0; } .app-shell { width:100%;padding:calc(18px + env(safe-area-inset-top)) 12px calc(94px + env(safe-area-inset-bottom)); } .topbar { padding:0 4px; } h1 { font-size:27px; }.icon-button { width:40px;height:40px; } .summary-card { margin:20px 0 14px;padding:19px 20px;border-radius:19px; }.summary-main strong { font-size:28px; }.cat-mark { width:58px;height:58px;font-size:29px; }.calendar-card { padding:14px 8px 11px;border-radius:19px; }.calendar-toolbar { padding:0 3px 11px; }.month-nav { width:38px;height:38px; }.weekdays { font-size:11px; }.calendar-grid { gap:3px 1px; }.day { min-height:0;padding:5px 1px 2px;border-radius:11px; }.day.today .day-number { width:23px;height:23px; }.day-number { font-size:13px; }.day-amount { margin-top:2px;font-size:9px;letter-spacing:-.04em; }.calendar-hint { margin-top:11px;font-size:11px; }.records-section { margin-top:14px;padding:17px 16px;border-radius:19px; }.record-item { min-height:61px; }.floating-add { right:18px;bottom:calc(18px + env(safe-area-inset-bottom));width:58px;height:58px;border-radius:19px; } .modal-backdrop { align-items:end;padding:0;background:rgba(47,41,38,.3); }.record-modal { width:100%;max-height:calc(100dvh - env(safe-area-inset-top));overflow:auto;padding:25px 20px calc(22px + env(safe-area-inset-bottom));border-radius:24px 24px 0 0; }.modal-icon { margin-bottom:12px; }.record-modal h2 { margin-bottom:19px; }.close-button { top:17px;right:16px; }.primary-button,.secondary-button { min-height:48px; } }
+  @media (max-width:360px) { .app-shell { padding-left:8px;padding-right:8px; }.calendar-card { padding-left:5px;padding-right:5px; }.day-number { font-size:12px; }.day-amount { font-size:8px; }.summary-card { padding:17px; }.summary-main strong { font-size:25px; }.cat-mark { width:52px;height:52px; } }
+  @media (hover:none) { .day:hover { background:transparent; } .day:active,.record-item:active { transform:scale(.98);background:var(--soft); } button { -webkit-tap-highlight-color:transparent;touch-action:manipulation; } }
+</style>
+
+<script>
+  const KEY = "cat-litter-rewards-v1";
+  const DRAFT_KEY = "cat-litter-rewards-draft-v1";
+  const AUTOSAVE_INTERVAL = 60 * 1000;
+  let records = JSON.parse(localStorage.getItem(KEY) || "{}");
+  let current = new Date(); current = new Date(current.getFullYear(), current.getMonth(), 1);
+  let selectedDate = null;
+  const $ = (id) => document.getElementById(id);
+  const money = (n) => new Intl.NumberFormat("zh-CN", { style:"currency", currency:"CNY" }).format(n);
+  const dateKey = (d) => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+  const readableDate = (key) => { const [y,m,d] = key.split("-"); return `${y}年${Number(m)}月${Number(d)}日`; };
+  const save = () => localStorage.setItem(KEY, JSON.stringify(records));
+  const updateAutosaveStatus = (text, saved = false) => { const el = $("autosaveStatus"); if (!el) return; el.textContent = text; el.classList.toggle("saved", saved); };
+  const saveDraft = () => {
+    if (!selectedDate || $("modalBackdrop").hidden) return;
+    const draft = { date: selectedDate, amount: $("amountInput").value, note: $("noteInput").value, savedAt: new Date().toISOString() };
+    localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+    updateAutosaveStatus("草稿已自动保存到本机", true);
+  };
+  const clearDraft = () => localStorage.removeItem(DRAFT_KEY);
+  const sameDay = (a,b) => a.getFullYear()===b.getFullYear() && a.getMonth()===b.getMonth() && a.getDate()===b.getDate();
+
+  function render() {
+    const y=current.getFullYear(), m=current.getMonth();
+    $("monthTitle").textContent = `${y}年${String(m+1).padStart(2,"0")}月`;
+    const prefix = (new Date(y,m,1).getDay()+6)%7;
+    const days = new Date(y,m+1,0).getDate();
+    const today = new Date(); const grid = $("calendarGrid"); grid.innerHTML="";
+    for(let i=0;i<prefix;i++) grid.insertAdjacentHTML("beforeend",'<div class="day empty"></div>');
+    for(let d=1;d<=days;d++) {
+      const date=new Date(y,m,d), key=dateKey(date), rec=records[key];
+      const classes=["day",sameDay(date,today)?"today":"",rec?"has-record":"",key===selectedDate?"selected":""].filter(Boolean).join(" ");
+      grid.insertAdjacentHTML("beforeend", `<button class="${classes}" data-date="${key}"><span class="day-number">${d}</span>${rec?`<span class="day-amount">¥${Number(rec.amount).toFixed(2)}</span>`:""}</button>`);
+    }
+    const monthPrefix=`${y}-${String(m+1).padStart(2,"0")}-`;
+    const monthRecords=Object.entries(records).filter(([k])=>k.startsWith(monthPrefix)).sort((a,b)=>b[0].localeCompare(a[0]));
+    const total=monthRecords.reduce((s,[,v])=>s+Number(v.amount),0);
+    $("monthTotal").textContent=money(total); $("monthCount").textContent=`本月已记录 ${monthRecords.length} 天`;
+    $("recordList").innerHTML=monthRecords.length ? monthRecords.map(([k,v])=>`<button class="record-item" data-date="${k}" style="width:100%;border-left:0;border-right:0;border-top:0;background:transparent;text-align:left"><span class="record-day">${Number(k.slice(-2))}日</span><span class="record-meta"><strong>${readableDate(k)}</strong><span>${v.note || "铲屎报酬"}</span></span><span class="record-amount">${money(Number(v.amount))}</span></button>`).join("") : '<div class="empty-state">这个月还没有记录<br>点右下角“＋”开始记账吧</div>';
+  }
+  function openModal(key) {
+    selectedDate=key; const rec=records[key]; const draft=JSON.parse(localStorage.getItem(DRAFT_KEY) || "null");
+    const useDraft=draft && draft.date===key;
+    $("modalDateTitle").textContent=readableDate(key); $("amountInput").value=useDraft?draft.amount:(rec?rec.amount:""); $("noteInput").value=useDraft?draft.note:(rec?rec.note||"":"");
+    $("deleteBtn").style.visibility=rec?"visible":"hidden"; $("modalBackdrop").hidden=false;
+    updateAutosaveStatus(useDraft?"已恢复未提交草稿，1 分钟后自动保存":"草稿每 1 分钟自动保存到本机");
+    setTimeout(()=>$("amountInput").focus(),50); render();
+  }
+  function closeModal(){ $("modalBackdrop").hidden=true; selectedDate=null; render(); }
+  $("calendarGrid").addEventListener("click",e=>{const b=e.target.closest("[data-date]");if(b) openModal(b.dataset.date)});
+  $("recordList").addEventListener("click",e=>{const b=e.target.closest("[data-date]");if(b) openModal(b.dataset.date)});
+  $("prevMonth").onclick=()=>{current.setMonth(current.getMonth()-1);render()}; $("nextMonth").onclick=()=>{current.setMonth(current.getMonth()+1);render()};
+  $("todayBtn").onclick=()=>{const d=new Date();current=new Date(d.getFullYear(),d.getMonth(),1);render()}; $("addTodayBtn").onclick=()=>openModal(dateKey(new Date()));
+  $("closeModal").onclick=closeModal; $("modalBackdrop").addEventListener("click",e=>{if(e.target===$("modalBackdrop"))closeModal()});
+  $("recordForm").addEventListener("submit",e=>{e.preventDefault();const amount=Number($("amountInput").value); if(!Number.isFinite(amount)||amount<0)return; records[selectedDate]={amount,note:$("noteInput").value.trim()};save();clearDraft();closeModal()});
+  $("deleteBtn").onclick=()=>{if(records[selectedDate] && confirm("确定删除这天的报酬记录吗？")){delete records[selectedDate];save();clearDraft();closeModal()}};
+  $("clearMonthBtn").onclick=()=>{const prefix=`${current.getFullYear()}-${String(current.getMonth()+1).padStart(2,"0")}-`; if(confirm("确定清空本月全部报酬记录吗？")){Object.keys(records).filter(k=>k.startsWith(prefix)).forEach(k=>delete records[k]);save();render()}};
+  $("amountInput").addEventListener("input",()=>updateAutosaveStatus("草稿将在 1 分钟内自动保存到本机"));
+  $("noteInput").addEventListener("input",()=>updateAutosaveStatus("草稿将在 1 分钟内自动保存到本机"));
+  setInterval(()=>{ save(); saveDraft(); }, AUTOSAVE_INTERVAL);
+  window.addEventListener("pagehide",()=>{ save(); saveDraft(); });
+  render();
+</script>
